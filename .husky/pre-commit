@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run translation validation
+echo "🌍 Validating translations..."
+npx tsx scripts/validate-translations.ts
+
+if [ $? -ne 0 ]; then
+  echo "❌ Translation validation failed. Please fix missing keys before committing."
+  exit 1
+fi
+
+echo "✅ Translations validated successfully!"

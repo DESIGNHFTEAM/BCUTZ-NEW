@@ -1,0 +1,52 @@
+project_id = "vpdlbnpsbemzdtqvyoye"
+
+[functions.send-barber-notification]
+verify_jwt = false
+
+[functions.send-admin-role-notification]
+verify_jwt = false
+
+[functions.create-connect-account]
+verify_jwt = false
+
+[functions.create-booking-checkout]
+verify_jwt = false
+
+[functions.process-barber-payout]
+verify_jwt = false
+
+[functions.check-connect-status]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.send-payment-notification]
+verify_jwt = false
+
+[functions.check-birthday-bonus]
+verify_jwt = false
+
+[functions.send-booking-reminders]
+verify_jwt = false
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.send-payment-receipt]
+verify_jwt = false
+
+[functions.delete-user-account]
+verify_jwt = false
+
+[functions.send-welcome-email]
+verify_jwt = false
+
+[functions.send-farewell-email]
+verify_jwt = false
+
+[functions.send-reengagement-emails]
+verify_jwt = false
+
+[functions.send-voucher-expiry-reminders]
+verify_jwt = false

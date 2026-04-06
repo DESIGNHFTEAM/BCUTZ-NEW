@@ -1,0 +1,29 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAM_ID.app.lovable.6f56399f41e640a98ad0b7cfdae000d0",
+        "paths": [
+          "/barber/*",
+          "/barbers",
+          "/bookings",
+          "/bookings/*",
+          "/loyalty",
+          "/profile",
+          "/auth",
+          "/payment-success",
+          "/install"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "TEAM_ID.app.lovable.6f56399f41e640a98ad0b7cfdae000d0"
+    ]
+  },
+  "appclips": {
+    "apps": []
+  }
+}
