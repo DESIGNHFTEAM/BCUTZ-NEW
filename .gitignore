@@ -44,3 +44,7 @@ android/
 # OS files
 Thumbs.db
 .env.save
+.env.bak
+.env.backup
+.env.production
+.env.staging

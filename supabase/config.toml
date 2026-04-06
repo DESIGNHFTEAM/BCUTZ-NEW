@@ -1,4 +1,4 @@
-project_id = "vpdlbnpsbemzdtqvyoye"
+project_id = "mistdeyttbkqrxcvnrlp"
 
 [functions.send-barber-notification]
 verify_jwt = false
