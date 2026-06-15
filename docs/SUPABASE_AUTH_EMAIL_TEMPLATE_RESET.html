@@ -1,0 +1,110 @@
+<!--
+==============================================================================
+BCUTZ — Supabase "Reset Password" email template
+==============================================================================
+
+WHERE TO PASTE:
+  Supabase Dashboard → project mistdeyttbkqrxcvnrlp → Authentication → Email
+  Templates → "Reset Password" → Message (HTML) field. Replace whatever is in
+  there now with the HTML below, then click Save.
+
+  Also confirm at the top of that same page:
+    Subject heading: "Reset your BCUTZ password"
+  And confirm under Authentication → URL Configuration:
+    Site URL: https://bcutz.com
+  (The .SiteURL variable in the template below resolves to that value.)
+
+WHY THIS CHANGE:
+  The default template uses {{ .ConfirmationURL }}, which expands to the raw
+  https://<project_ref>.supabase.co/auth/v1/verify?... URL — leaking the
+  project ref. This template instead builds the link as
+  {{ .SiteURL }}/reset-password?token_hash={{ .TokenHash }}&type=recovery,
+  which keeps the user on bcutz.com. The frontend at /reset-password reads
+  token_hash and calls supabase.auth.verifyOtp({ token_hash, type: 'recovery' })
+  to complete the recovery flow — that part is being shipped in Lovable now.
+
+  The "Or paste this URL into your browser:" fallback is intentionally
+  removed so the raw URL is never shown as plain text in the email body.
+
+ROLLBACK:
+  If you want to revert, the default Supabase template is one click away
+  via the "Reset to default" button on the same edit page.
+==============================================================================
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reset your BCUTZ password</title>
+  </head>
+  <body style="margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0a0a0a;">
+      <tr>
+        <td align="center" style="padding:40px 20px;">
+          <table cellpadding="0" cellspacing="0" border="0" style="max-width:520px;width:100%;">
+
+            <!-- Wordmark -->
+            <tr>
+              <td align="center" style="padding-bottom:32px;">
+                <h1 style="margin:0;font-size:42px;color:#c9a227;font-family:Georgia,serif;letter-spacing:1px;">BCUTZ</h1>
+              </td>
+            </tr>
+
+            <!-- Card -->
+            <tr>
+              <td style="background:#111;border:1px solid #222;border-radius:8px;padding:32px;">
+                <p style="margin:0 0 8px 0;color:#c9a227;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;">
+                  Password reset
+                </p>
+                <h2 style="color:#fff;font-size:24px;margin:0 0 16px 0;font-weight:600;">
+                  Reset your password
+                </h2>
+                <p style="color:#aaa;font-size:15px;line-height:1.55;margin:0 0 24px 0;">
+                  Someone (hopefully you) asked to reset the password for your BCUTZ account.
+                  Tap the button below to choose a new one. This link expires in 1 hour and can
+                  only be used once.
+                </p>
+
+                <!-- CTA button -->
+                <table cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px 0;">
+                  <tr>
+                    <td bgcolor="#c9a227" style="border-radius:6px;">
+                      <a
+                        href="{{ .SiteURL }}/reset-password?token_hash={{ .TokenHash }}&type=recovery"
+                        target="_blank"
+                        style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:600;color:#0a0a0a;text-decoration:none;border-radius:6px;"
+                      >
+                        Reset password
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="color:#666;font-size:13px;line-height:1.55;margin:0;">
+                  If you didn’t ask for a password reset, you can safely ignore this email —
+                  your current password will keep working.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td align="center" style="padding:24px 0;">
+                <p style="color:#444;font-size:11px;margin:0;">
+                  &copy; 2026 BCUTZ. Founded &amp; forged in Switzerland.
+                </p>
+                <p style="color:#444;font-size:11px;margin:8px 0 0 0;">
+                  <a href="https://bcutz.com" style="color:#666;text-decoration:none;">bcutz.com</a>
+                  &nbsp;·&nbsp;
+                  <a href="https://bcutz.com/contact" style="color:#666;text-decoration:none;">Support</a>
+                </p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

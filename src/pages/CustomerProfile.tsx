@@ -891,15 +891,15 @@ export default function CustomerProfile() {
                       {t('profile.signOutButton')}
                     </Button>
 
-                    {/* Hidden delete account - scroll to find it */}
-                    <div className="pt-16 border-t border-border/30">
-                      <p className="text-xs text-foreground/60 text-center mb-4">{t('profile.deleteAccountDialog.dangerZone')}</p>
-                      <Button 
-                        variant="outline" 
-                        className="w-full text-destructive border-destructive/40 hover:bg-destructive/10 text-xs"
+                    {/* Account deletion — must stay discoverable (Apple Guideline 5.1.1(v)) */}
+                    <div className="pt-6 border-t border-border/30">
+                      <p className="text-sm text-foreground/60 text-center mb-4">{t('profile.deleteAccountDialog.dangerZone')}</p>
+                      <Button
+                        variant="outline"
+                        className="w-full text-destructive border-destructive/40 hover:bg-destructive/10"
                         onClick={() => setShowDeleteDialog(true)}
                       >
-                        <Trash2 className="w-3 h-3 mr-2" />
+                        <Trash2 className="w-4 h-4 mr-2" />
                         {t('profile.deleteAccountDialog.deleteButton')}
                       </Button>
                     </div>

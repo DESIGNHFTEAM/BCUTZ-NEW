@@ -292,7 +292,55 @@
     "forBarbersFeature2": "Paghi solo quando guadagni",
     "forBarbersFeature3": "Accesso completo alla dashboard",
     "forBarbersFeature4": "Versamenti settimanali",
-    "paymentMethods": "Metodi di pagamento accettati",
+    "customers": {
+      "title": "PER I CLIENTI",
+      "subtitle": "Prenota il tuo taglio perfetto",
+      "fee": "commissione di prenotazione",
+      "description": "Paghi solo una piccola commissione di prenotazione di CHF 2 oltre al prezzo del servizio. Tutto qui!",
+      "features": {
+        "browse": "Esplora e prenota qualsiasi barbiere",
+        "secure": "Elaborazione sicura dei pagamenti",
+        "loyalty": "Accumula punti fedeltà",
+        "reminders": "Conferme & promemoria di prenotazione",
+        "review": "Valuta la tua esperienza"
+      }
+    },
+    "barbers": {
+      "title": "PER I BARBIERI",
+      "subtitle": "Ottieni più clienti",
+      "badge": "FAI CRESCERE IL TUO BUSINESS",
+      "price": "GRATIS",
+      "priceNote": "per unirti",
+      "description": "Nessun costo di abbonamento. Ricevi l'intero importo del servizio direttamente sul tuo conto dopo ogni prenotazione.",
+      "features": {
+        "profile": "Profilo aziendale gratuito",
+        "unlimited": "Prenotazioni illimitate",
+        "payouts": "Versamenti diretti sul tuo conto bancario",
+        "management": "Strumenti di gestione clienti",
+        "analytics": "Dashboard analitica",
+        "verified": "Badge verificato"
+      }
+    },
+    "paymentMethods": {
+      "title": "METODI DI PAGAMENTO ACCETTATI",
+      "card": "Carta di credito / debito"
+    },
+    "howItWorks": {
+      "title": "COME FUNZIONANO I PAGAMENTI",
+      "step1": {
+        "title": "Il cliente prenota",
+        "description": "Il cliente sceglie un servizio e paga il prezzo del servizio + CHF 2 di commissione di prenotazione"
+      },
+      "step2": {
+        "title": "Pagamento sicuro",
+        "description": "Il pagamento viene elaborato in modo sicuro tramite Stripe o TWINT"
+      },
+      "step3": {
+        "title": "Il barbiere viene pagato",
+        "description": "L'intero importo del servizio viene trasferito direttamente sul conto del barbiere"
+      }
+    },
+    "paymentMethodsLegacy": "Metodi di pagamento accettati",
     "paymentMethodsDesc": "Supportiamo tutti i principali metodi di pagamento per la tua comodità.",
     "creditDebit": "Carta credito/debito",
     "creditDebitDesc": "Visa, Mastercard, Amex",

@@ -292,7 +292,55 @@
     "forBarbersFeature2": "Paie uniquement quand tu gagnes",
     "forBarbersFeature3": "Accès complet au tableau de bord",
     "forBarbersFeature4": "Versements hebdomadaires",
-    "paymentMethods": "Méthodes de paiement acceptées",
+    "customers": {
+      "title": "POUR LES CLIENTS",
+      "subtitle": "Réserve ta coupe parfaite",
+      "fee": "frais de réservation",
+      "description": "Paie seulement de petits frais de réservation de CHF 2 en plus du prix du service. C'est tout !",
+      "features": {
+        "browse": "Parcours et réserve n'importe quel barbier",
+        "secure": "Traitement sécurisé des paiements",
+        "loyalty": "Gagne des points de fidélité",
+        "reminders": "Confirmations & rappels de réservation",
+        "review": "Évalue ton expérience"
+      }
+    },
+    "barbers": {
+      "title": "POUR LES BARBIERS",
+      "subtitle": "Gagne plus de clients",
+      "badge": "DÉVELOPPE TON BUSINESS",
+      "price": "GRATUIT",
+      "priceNote": "pour rejoindre",
+      "description": "Aucun frais d'abonnement. Tu reçois le montant total du service directement sur ton compte après chaque réservation.",
+      "features": {
+        "profile": "Profil professionnel gratuit",
+        "unlimited": "Réservations illimitées",
+        "payouts": "Versements directs sur ton compte bancaire",
+        "management": "Outils de gestion de la clientèle",
+        "analytics": "Tableau de bord analytique",
+        "verified": "Badge vérifié"
+      }
+    },
+    "paymentMethods": {
+      "title": "MOYENS DE PAIEMENT ACCEPTÉS",
+      "card": "Carte de crédit / débit"
+    },
+    "howItWorks": {
+      "title": "COMMENT FONCTIONNENT LES PAIEMENTS",
+      "step1": {
+        "title": "Le client réserve",
+        "description": "Le client choisit un service et paie le prix du service + CHF 2 de frais de réservation"
+      },
+      "step2": {
+        "title": "Paiement sécurisé",
+        "description": "Le paiement est traité en toute sécurité via Stripe ou TWINT"
+      },
+      "step3": {
+        "title": "Le barbier est payé",
+        "description": "Le montant total du service est transféré directement sur le compte du barbier"
+      }
+    },
+    "paymentMethodsLegacy": "Méthodes de paiement acceptées",
     "paymentMethodsDesc": "Nous acceptons toutes les méthodes de paiement principales pour ta commodité.",
     "creditDebit": "Carte crédit/débit",
     "creditDebitDesc": "Visa, Mastercard, Amex",
@@ -1362,66 +1410,6 @@
     "signIn": "Connexion",
     "admin": "Admin",
     "messages": "Messages"
-  },
-  "legal": {
-    "cookiePolicy": {
-      "title": "Politique des cookies",
-      "lastUpdated": "Dernière mise à jour",
-      "intro": "Cette politique des cookies explique comment BCUTZ utilise les cookies et technologies similaires.",
-      "whatAreCookies": "Que sont les cookies",
-      "whatAreCookiesDesc": "Les cookies sont de petits fichiers texte stockés sur ton appareil lorsque tu visites notre site.",
-      "typesOfCookies": "Types de cookies que nous utilisons",
-      "necessaryCookies": "Cookies nécessaires",
-      "necessaryCookiesDesc": "Essentiels au bon fonctionnement du site.",
-      "analyticsCookies": "Cookies analytiques",
-      "analyticsCookiesDesc": "Nous aident à comprendre comment les visiteurs interagissent avec notre site.",
-      "marketingCookies": "Cookies marketing",
-      "marketingCookiesDesc": "Utilisés pour diffuser des publicités personnalisées.",
-      "manageCookies": "Gérer les cookies",
-      "manageCookiesDesc": "Tu peux contrôler et gérer les cookies via les paramètres de ton navigateur.",
-      "contactUs": "Nous contacter",
-      "contactUsDesc": "Pour toute question sur notre politique des cookies, contacte-nous."
-    },
-    "termsOfService": {
-      "title": "Conditions d'utilisation",
-      "lastUpdated": "Dernière mise à jour",
-      "intro": "Merci de lire attentivement ces conditions avant d'utiliser BCUTZ.",
-      "acceptanceOfTerms": "Acceptation des conditions",
-      "acceptanceOfTermsDesc": "En accédant ou en utilisant BCUTZ, tu acceptes d'être lié par ces conditions.",
-      "useOfService": "Utilisation du service",
-      "useOfServiceDesc": "Tu acceptes d'utiliser BCUTZ uniquement à des fins légales et conformément à ces conditions.",
-      "userAccounts": "Comptes utilisateurs",
-      "userAccountsDesc": "Tu es responsable de la confidentialité de ton compte.",
-      "bookingsAndPayments": "Réservations et paiements",
-      "bookingsAndPaymentsDesc": "Toutes les réservations sont soumises à disponibilité. Les paiements sont traités de manière sécurisée.",
-      "cancellations": "Annulations",
-      "cancellationsDesc": "Les politiques d'annulation peuvent varier selon le barbier. Vérifie avant de réserver.",
-      "liability": "Limitation de responsabilité",
-      "liabilityDesc": "BCUTZ n'est pas responsable des dommages indirects ou consécutifs.",
-      "changes": "Modifications des conditions",
-      "changesDesc": "Nous nous réservons le droit de modifier ces conditions à tout moment.",
-      "contactUs": "Nous contacter",
-      "contactUsDesc": "Pour toute question sur ces conditions, contacte-nous."
-    },
-    "privacyPolicy": {
-      "title": "Politique de confidentialité",
-      "lastUpdated": "Dernière mise à jour",
-      "intro": "Ta vie privée est importante pour nous. Cette politique explique comment nous collectons et utilisons tes données.",
-      "dataCollection": "Collecte de données",
-      "dataCollectionDesc": "Nous collectons les informations que tu fournis et les données sur ton utilisation de nos services.",
-      "dataUsage": "Comment nous utilisons tes données",
-      "dataUsageDesc": "Nous utilisons tes données pour fournir et améliorer nos services.",
-      "dataSharing": "Partage de données",
-      "dataSharingDesc": "Nous ne vendons pas tes informations personnelles à des tiers.",
-      "dataSecurity": "Sécurité des données",
-      "dataSecurityDesc": "Nous mettons en œuvre des mesures de sécurité appropriées pour protéger tes données.",
-      "yourRights": "Tes droits",
-      "yourRightsDesc": "Tu as le droit d'accéder, de corriger ou de supprimer tes données personnelles.",
-      "cookies": "Cookies",
-      "cookiesDesc": "Nous utilisons des cookies pour améliorer ton expérience. Consulte notre politique des cookies pour plus de détails.",
-      "contactUs": "Nous contacter",
-      "contactUsDesc": "Pour les demandes de confidentialité, contacte notre équipe de protection des données."
-    }
   },
   "install": {
     "title": "Installer BCUTZ",

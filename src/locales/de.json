@@ -292,7 +292,55 @@
     "forBarbersFeature2": "Bezahle nur wenn du verdienst",
     "forBarbersFeature3": "Voller Dashboard-Zugang",
     "forBarbersFeature4": "Wöchentliche Auszahlungen",
-    "paymentMethods": "Akzeptierte Zahlungsmethoden",
+    "customers": {
+      "title": "FÜR KUNDEN",
+      "subtitle": "Buche deinen perfekten Schnitt",
+      "fee": "Buchungsgebühr",
+      "description": "Zahle nur eine kleine Buchungsgebühr von CHF 2 zusätzlich zum Servicepreis. Das war's!",
+      "features": {
+        "browse": "Stöbere und buche jeden Barber",
+        "secure": "Sichere Zahlungsabwicklung",
+        "loyalty": "Sammle Treuepunkte",
+        "reminders": "Buchungsbestätigungen & Erinnerungen",
+        "review": "Bewerte dein Erlebnis"
+      }
+    },
+    "barbers": {
+      "title": "FÜR BARBER",
+      "subtitle": "Gewinne mehr Kunden",
+      "badge": "LASS DEIN BUSINESS WACHSEN",
+      "price": "GRATIS",
+      "priceNote": "beitreten",
+      "description": "Keine Abogebühren. Du erhältst den vollen Servicebetrag nach jeder Buchung direkt auf dein Konto.",
+      "features": {
+        "profile": "Kostenloses Business-Profil",
+        "unlimited": "Unbegrenzte Buchungen",
+        "payouts": "Direkte Auszahlungen auf dein Bankkonto",
+        "management": "Tools zur Kundenverwaltung",
+        "analytics": "Analytics-Dashboard",
+        "verified": "Verifiziert-Badge"
+      }
+    },
+    "paymentMethods": {
+      "title": "AKZEPTIERTE ZAHLUNGSMETHODEN",
+      "card": "Kredit-/Debitkarte"
+    },
+    "howItWorks": {
+      "title": "SO FUNKTIONIEREN ZAHLUNGEN",
+      "step1": {
+        "title": "Kunde bucht",
+        "description": "Der Kunde wählt einen Service und zahlt den Servicepreis + CHF 2 Buchungsgebühr"
+      },
+      "step2": {
+        "title": "Sichere Zahlung",
+        "description": "Die Zahlung wird sicher über Stripe oder TWINT abgewickelt"
+      },
+      "step3": {
+        "title": "Barber wird bezahlt",
+        "description": "Der volle Servicebetrag wird direkt auf das Konto des Barbers überwiesen"
+      }
+    },
+    "paymentMethodsLegacy": "Akzeptierte Zahlungsmethoden",
     "paymentMethodsDesc": "Wir unterstützen alle gängigen Zahlungsmethoden für deine Bequemlichkeit.",
     "creditDebit": "Kredit-/Debitkarte",
     "creditDebitDesc": "Visa, Mastercard, Amex",
@@ -1362,66 +1410,6 @@
     "signIn": "Anmelden",
     "admin": "Admin",
     "messages": "Nachrichten"
-  },
-  "legal": {
-    "cookiePolicy": {
-      "title": "Cookie-Richtlinie",
-      "lastUpdated": "Zuletzt aktualisiert",
-      "intro": "Diese Cookie-Richtlinie erklärt, wie BCUTZ Cookies und ähnliche Technologien verwendet.",
-      "whatAreCookies": "Was sind Cookies",
-      "whatAreCookiesDesc": "Cookies sind kleine Textdateien, die auf deinem Gerät gespeichert werden, wenn du unsere Website besuchst.",
-      "typesOfCookies": "Arten von Cookies, die wir verwenden",
-      "necessaryCookies": "Notwendige Cookies",
-      "necessaryCookiesDesc": "Erforderlich für die ordnungsgemässe Funktion der Website.",
-      "analyticsCookies": "Analyse-Cookies",
-      "analyticsCookiesDesc": "Helfen uns zu verstehen, wie Besucher mit unserer Website interagieren.",
-      "marketingCookies": "Marketing-Cookies",
-      "marketingCookiesDesc": "Werden verwendet, um personalisierte Werbung zu liefern.",
-      "manageCookies": "Cookies verwalten",
-      "manageCookiesDesc": "Du kannst Cookies über deine Browser-Einstellungen steuern und verwalten.",
-      "contactUs": "Kontakt",
-      "contactUsDesc": "Bei Fragen zu unserer Cookie-Richtlinie kontaktiere uns bitte."
-    },
-    "termsOfService": {
-      "title": "Allgemeine Geschäftsbedingungen",
-      "lastUpdated": "Zuletzt aktualisiert",
-      "intro": "Bitte lies diese Bedingungen sorgfältig durch, bevor du BCUTZ nutzt.",
-      "acceptanceOfTerms": "Annahme der Bedingungen",
-      "acceptanceOfTermsDesc": "Durch den Zugriff auf oder die Nutzung von BCUTZ stimmst du diesen Bedingungen zu.",
-      "useOfService": "Nutzung des Dienstes",
-      "useOfServiceDesc": "Du stimmst zu, BCUTZ nur für rechtmässige Zwecke und gemäss diesen Bedingungen zu nutzen.",
-      "userAccounts": "Benutzerkonten",
-      "userAccountsDesc": "Du bist für die Vertraulichkeit deines Kontos verantwortlich.",
-      "bookingsAndPayments": "Buchungen und Zahlungen",
-      "bookingsAndPaymentsDesc": "Alle Buchungen unterliegen der Verfügbarkeit. Zahlungen werden sicher verarbeitet.",
-      "cancellations": "Stornierungen",
-      "cancellationsDesc": "Stornierungsrichtlinien können je nach Barber variieren. Bitte prüfe vor der Buchung.",
-      "liability": "Haftungsbeschränkung",
-      "liabilityDesc": "BCUTZ haftet nicht für indirekte oder Folgeschäden.",
-      "changes": "Änderungen der Bedingungen",
-      "changesDesc": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern.",
-      "contactUs": "Kontakt",
-      "contactUsDesc": "Bei Fragen zu diesen Bedingungen kontaktiere uns bitte."
-    },
-    "privacyPolicy": {
-      "title": "Datenschutzerklärung",
-      "lastUpdated": "Zuletzt aktualisiert",
-      "intro": "Deine Privatsphäre ist uns wichtig. Diese Richtlinie erklärt, wie wir deine Daten erfassen und verwenden.",
-      "dataCollection": "Datenerfassung",
-      "dataCollectionDesc": "Wir erfassen Informationen, die du angibst, und Daten über deine Nutzung unserer Dienste.",
-      "dataUsage": "Wie wir deine Daten verwenden",
-      "dataUsageDesc": "Wir verwenden deine Daten, um unsere Dienste bereitzustellen und zu verbessern.",
-      "dataSharing": "Datenweitergabe",
-      "dataSharingDesc": "Wir verkaufen deine persönlichen Daten nicht an Dritte.",
-      "dataSecurity": "Datensicherheit",
-      "dataSecurityDesc": "Wir implementieren angemessene Sicherheitsmassnahmen zum Schutz deiner Daten.",
-      "yourRights": "Deine Rechte",
-      "yourRightsDesc": "Du hast das Recht, auf deine persönlichen Daten zuzugreifen, sie zu korrigieren oder zu löschen.",
-      "cookies": "Cookies",
-      "cookiesDesc": "Wir verwenden Cookies, um dein Erlebnis zu verbessern. Siehe unsere Cookie-Richtlinie für Details.",
-      "contactUs": "Kontakt",
-      "contactUsDesc": "Bei Datenschutzanfragen wende dich bitte an unser Datenschutzteam."
-    }
   },
   "install": {
     "title": "BCUTZ installieren",

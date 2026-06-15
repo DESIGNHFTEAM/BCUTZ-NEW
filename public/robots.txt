@@ -1,3 +1,6 @@
+# BCUTZ — robots.txt
+# Allow all major search and social bots; block auth/dashboard internals from index.
+
 User-agent: Googlebot
 Allow: /
 
@@ -10,5 +13,26 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
 User-agent: *
 Allow: /
+
+# Keep auth + dashboards out of search results
+Disallow: /auth
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /founder
+Disallow: /founder/
+Disallow: /payment-success
+Disallow: /unauthorized
+
+Sitemap: https://bcutz.com/sitemap.xml
