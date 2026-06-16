@@ -4,8 +4,8 @@
 
 **App Name:** BCUTZ - Book Your Perfect Cut  
 **Bundle ID:** com.bcutz.app  
-**Category:** Lifestyle / Beauty  
-**Sub-Category:** Health & Fitness  
+**Category (Apple):** Primary: Lifestyle · Secondary: Health & Fitness  *(Apple has no "Beauty" category)*  
+**Category (Google Play):** Beauty (Primary) · Lifestyle (Secondary)  
 **Age Rating:** 4+ (No objectionable content)  
 **Price:** Free  
 
@@ -45,7 +45,7 @@ Book appointments in seconds, not minutes. See real-time availability, choose yo
 Pay securely through the app with your preferred payment method. Just a flat CHF 2.00 service fee per booking. No cash needed, no awkward checkout moments.
 
 ⭐ TRUSTED REVIEWS
-Read honest reviews from real customers. See before-and-after photos and make informed decisions about your next cut.
+Read honest reviews from real customers. Browse barber portfolio photos and make informed decisions about your next cut.
 
 🎁 LOYALTY REWARDS
 Earn points on every booking! Climb through Bronze, Silver, Gold, and Platinum tiers to unlock exclusive discounts and perks. Birthday bonus included!
@@ -62,7 +62,7 @@ FEATURES:
 • Push notification reminders
 • Calendar integration
 • Loyalty points program
-• Multi-language support (English, German, French)
+• Multi-language support (English, German, French, Italian)
 • Offline access to booked appointments
 • Save favorite barbers
 
@@ -125,7 +125,7 @@ See real-time availability and book your appointment with just a few taps. No ph
 Secure payments with multiple options. Just a flat CHF 2.00 service fee per booking. Pay in-app with your credit card, debit card, or your preferred payment method.
 
 ⭐ REAL REVIEWS, REAL RESULTS
-Make confident decisions with honest reviews from verified customers. Browse before-and-after photos to find your next style.
+Make confident decisions with honest reviews from verified customers. Browse barber portfolio photos to find your next style.
 
 🏆 EARN REWARDS
 Join our loyalty program and earn points on every booking. Progress through Bronze, Silver, Gold, and Platinum tiers for exclusive discounts. Special birthday bonuses!
@@ -134,7 +134,7 @@ Join our loyalty program and earn points on every booking. Progress through Bron
 Smart reminders ensure you never forget an appointment. One-tap calendar integration keeps you organized.
 
 🌍 WORKS EVERYWHERE
-Available in English, German, and French. Supports barbers across multiple regions.
+Available in English, German, French, and Italian. Supports barbers across multiple regions.
 
 📴 WORKS OFFLINE
 View your booked appointments even without internet. Your schedule is always accessible.
@@ -143,7 +143,7 @@ View your booked appointments even without internet. Your schedule is always acc
 • Real-time availability checking
 • Secure payment processing
 • Push notifications for reminders
-• Google Calendar integration
+• Calendar integration (Google, Apple & .ics)
 • Points-based loyalty rewards
 • Save your favorite barbers
 • Light and dark theme options
@@ -277,6 +277,7 @@ Questions? Contact us at support@bcutz.app
 - English (en-US) - Primary
 - German (de-DE)
 - French (fr-FR)
+- Italian (it-IT)
 
 *All store listings should be translated for each supported language.*
 
@@ -317,3 +318,118 @@ Test card: 4242 4242 4242 4242 (any future date, any CVC)
 **Website:** https://bcutz.app  
 **Phone:** [Your support phone number]  
 **Address:** [Your business address]
+
+---
+
+# App Store Connect — Submission Answers (v1.0)
+
+Copy/paste-ready answers for the App Store Connect submission flow. Everything the
+reviewer questionnaire asks, pre-filled. Items marked **[operator]** require a human
+because they need credentials, account access, or a legal/business decision.
+
+## Version Information
+
+| Field | Value |
+|-------|-------|
+| Version string | `1.0.0` |
+| Build | `1` |
+| Copyright | `© 2026 BCUTZ` |
+| Bundle ID | `com.bcutz.app` |
+| SKU | `bcutz-ios-001` |
+| Primary language | English (U.S.) |
+
+### What's New in This Version (release notes, 4000 char max)
+```
+Welcome to BCUTZ 1.0 — the modern way to find and book the best barbers near you.
+
+• Discover verified barbers with reviews, portfolios, and transparent pricing
+• Book in seconds with real-time availability
+• Secure in-app payments (flat CHF 2.00 service fee)
+• Loyalty rewards: earn points on every booking
+• Smart reminders + one-tap calendar add
+• Sign in with Apple, Google, or email
+• Available in English, German, French, and Italian
+• Light & dark themes
+
+Thanks for trying BCUTZ. Questions or feedback? support@bcutz.app
+```
+
+## Export Compliance (ITSAppUsesNonExemptEncryption)
+- **Does your app use encryption?** → **No** (only standard HTTPS/TLS, which is exempt).
+- `Info.plist` already sets `ITSAppUsesNonExemptEncryption = false`, so the per-build
+  prompt is auto-answered. No CCATS / year-end self-classification report needed.
+
+## Content Rights
+- **Does your app contain, show, or access third-party content?** → **No**
+  (all content is user/barber-generated within the platform). No paid licenses required.
+
+## Age Rating Questionnaire → **4+**
+Answer **None / No** to every category:
+- Cartoon/Fantasy violence: None · Realistic violence: None
+- Sexual content / Nudity: None · Profanity / Crude humor: None
+- Alcohol, Tobacco, Drug use: None · Mature/Suggestive themes: None
+- Horror/Fear: None · Medical/Treatment info: None · Gambling: No
+- Contests: No · Unrestricted web access: No
+- User-generated content: **Yes** (reviews) → app has reporting + moderation; still rates 4+.
+
+## App Privacy ("nutrition label" — Data Collection)
+Set in App Store Connect → App Privacy. None of the below is used for **tracking** (no
+cross-app/3rd-party ad tracking → no ATT prompt needed).
+
+| Data type | Collected | Linked to user | Purpose |
+|-----------|-----------|----------------|---------|
+| Email address | Yes | Yes | Account, app functionality |
+| Name | Yes | Yes | Account, app functionality |
+| Coarse location | Yes | Yes | Show nearby barbers (app functionality) |
+| Payment info | Yes (via **Stripe**) | Yes | Process bookings |
+| Customer support / messages | Yes | Yes | Support, app functionality |
+| Identifiers (user ID) | Yes | Yes | App functionality |
+| Usage data / diagnostics | Optional | — | Only if analytics enabled |
+
+- **Tracking:** No. **Third-party advertising:** No. **Data used to track you:** None.
+- Payment card data is handled by Stripe and is **not** stored by BCUTZ.
+
+## Sign in with Apple (Guideline 4.8) — REQUIRED
+Because the app offers Google sign-in, Apple requires an equivalent privacy-respecting
+option. Sign in with Apple is scaffolded in `src/pages/Auth.tsx`.
+- **[operator]** Apple Developer → create a **Services ID** + **Sign in with Apple key (.p8)**.
+- **[operator]** Supabase → Auth → Providers → enable **Apple** (paste Services ID, Team ID, Key ID, .p8).
+- **[operator]** Xcode → App target → Signing & Capabilities → **+ Sign in with Apple**.
+
+## Account Deletion (Guideline 5.1.1(v)) — REQUIRED
+- In-app deletion is discoverable at **Profile → Delete account** (`src/pages/CustomerProfile.tsx`).
+- Deletion calls the `delete-user-account` edge function with email-code confirmation.
+- **[operator BLOCKER]** depends on the confirmation-email system working (see Known Issues).
+
+## Platform Availability
+- **iPhone:** Yes (primary).
+- **iPad:** Yes — universal build (no iPad-specific code needed; layout is responsive).
+- **macOS (Apple Silicon):** ship via **"Make this app available on Mac (Designed for iPad)"**
+  checkbox in App Store Connect. **Zero extra code or signing** — the iPad build runs on
+  M-series Macs. *Recommended path for launch.* (Mac Catalyst would need extra Xcode config
+  + separate signing and is **not** required for v1.)
+- **Apple Vision Pro:** optional ("Compatible with iPad apps") — leave off for v1.
+
+## Review Notes (App Review Information field)
+```
+Demo account: reviewer@bcutz.app  (password provided in App Store Connect → App Review Information)
+Location permission shows nearby barbers; any location works (demo barbers exist in all regions).
+Payments run in Stripe test mode. Test card: 4242 4242 4242 4242, any future date, any CVC.
+Sign in with Apple, Google, and email are all available on the Auth screen.
+```
+> **[security][operator]** Do NOT keep the real reviewer password in this git-tracked file.
+> The literal password in the "Review Notes for Apple" block above is already in git history —
+> **rotate `reviewer@bcutz.app` and store the new password only in App Store Connect's
+> App Review Information field.**
+
+## Known Issues / Blockers before submit
+1. **[operator]** `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` (CLI currently points at CommandLineTools).
+2. **[operator]** Apple Developer signing (team, cert, provisioning profile) — must be done in Xcode by the account holder.
+3. **[operator BLOCKER]** Confirmation email (signup / reset / account-deletion code) — fix Resend/DKIM before review, or deletion + signup will fail for the reviewer.
+4. **[operator]** iOS Push capability + APNs entitlement in Xcode (or hide push UI for v1).
+5. **[operator]** Screenshots — capture from a Simulator run (sizes in Screenshot Requirements above).
+
+## Pre-filled defaults
+- **Price:** Free (Tier 0)
+- **Availability:** All territories (or restrict to Switzerland for launch — operator choice)
+- **App Store marketing icon:** `resources/appstore-icon-1024.png` (1024×1024, no alpha)
