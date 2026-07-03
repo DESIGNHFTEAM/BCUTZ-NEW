@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/html.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -20,7 +21,7 @@ function generateReengagementEmail(name: string, daysSinceLastBooking: number): 
     '<tr><td style="background-color:#111;border:1px solid #222;padding:32px;">' +
     '<div style="display:inline-block;background:rgba(201,162,39,0.15);color:#c9a227;border:1px solid #c9a227;padding:6px 14px;border-radius:4px;font-size:12px;font-weight:600;letter-spacing:0.5px;margin-bottom:16px;">WE MISS YOU</div>' +
     '<h2 style="color:#fff;font-size:22px;font-weight:600;margin:0 0 16px 0;line-height:1.3;">It\'s been a while</h2>' +
-    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">Hey ' + name + ',</p>' +
+    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">Hey ' + escapeHtml(name) + ',</p>' +
     '<div style="color:#aaa;font-size:14px;line-height:1.7;">' +
     '<p style="margin:0 0 16px 0;">It\'s been <strong style="color:#c9a227;">' + daysSinceLastBooking + ' days</strong> since your last booking with BCUTZ. Your hair deserves the best care!</p>' +
     '<div style="background:rgba(201,162,39,0.1);border:1px solid #c9a227;padding:20px;margin:24px 0;text-align:center;">' +

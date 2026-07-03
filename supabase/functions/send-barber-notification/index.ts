@@ -3,6 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { z } from "https://esm.sh/zod@3.22.4";
 import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { logError, withRetry } from "../_shared/error-logger.ts";
 
 // UUID validation regex
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -130,9 +132,9 @@ function generateApprovedEmail(t: typeof emailTranslations['en'], userName: stri
     '<tr><td style="background-color:#111;border:1px solid #222;padding:32px;">' +
     '<div style="display:inline-block;background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid #22c55e;padding:6px 14px;border-radius:4px;font-size:12px;font-weight:600;letter-spacing:0.5px;margin-bottom:16px;">APPROVED</div>' +
     '<h2 style="color:#fff;font-size:22px;font-weight:600;margin:0 0 16px 0;line-height:1.3;">Welcome to the BCUTZ Family</h2>' +
-    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">' + t.hi + ' ' + userName + ',</p>' +
+    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">' + t.hi + ' ' + escapeHtml(userName) + ',</p>' +
     '<div style="color:#aaa;font-size:14px;line-height:1.7;">' +
-    '<p style="margin:0 0 16px 0;">' + t.greatNews + ' <strong style="color:#c9a227;">' + shopName + '</strong> ' + t.hasBeenVerified + '</p>' +
+    '<p style="margin:0 0 16px 0;">' + t.greatNews + ' <strong style="color:#c9a227;">' + escapeHtml(shopName) + '</strong> ' + t.hasBeenVerified + '</p>' +
     '<p style="color:#c9a227;font-weight:600;margin:24px 0 12px 0;font-size:12px;text-transform:uppercase;letter-spacing:1px;">' + t.youCanNow + '</p>' +
     '<ul style="list-style:none;padding:0;margin:0;">' +
     '<li style="padding:8px 0;color:#aaa;"><span style="color:#c9a227;margin-right:8px;">&#10003;</span> ' + t.receiveBookings + '</li>' +
@@ -154,7 +156,7 @@ function generateApprovedEmail(t: typeof emailTranslations['en'], userName: stri
 function generateRejectedEmail(t: typeof emailTranslations['en'], userName: string, shopName: string, reason?: string): string {
   const year = new Date().getFullYear();
   const reasonBlock = reason
-    ? '<div style="background:rgba(239,68,68,0.1);border-left:3px solid #ef4444;padding:12px 16px;margin:20px 0;"><p style="color:#ef4444;font-size:13px;margin:0;"><strong>' + t.reason + ':</strong> ' + reason + '</p></div>'
+    ? '<div style="background:rgba(239,68,68,0.1);border-left:3px solid #ef4444;padding:12px 16px;margin:20px 0;"><p style="color:#ef4444;font-size:13px;margin:0;"><strong>' + t.reason + ':</strong> ' + escapeHtml(reason) + '</p></div>'
     : '';
 
   return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Application Update</title></head>' +
@@ -166,9 +168,9 @@ function generateRejectedEmail(t: typeof emailTranslations['en'], userName: stri
     '<tr><td style="background-color:#111;border:1px solid #222;padding:32px;">' +
     '<div style="display:inline-block;background:rgba(234,179,8,0.15);color:#eab308;border:1px solid #eab308;padding:6px 14px;border-radius:4px;font-size:12px;font-weight:600;letter-spacing:0.5px;margin-bottom:16px;">REVIEW UPDATE</div>' +
     '<h2 style="color:#fff;font-size:22px;font-weight:600;margin:0 0 16px 0;line-height:1.3;">Application Update</h2>' +
-    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">' + t.hi + ' ' + userName + ',</p>' +
+    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">' + t.hi + ' ' + escapeHtml(userName) + ',</p>' +
     '<div style="color:#aaa;font-size:14px;line-height:1.7;">' +
-    '<p style="margin:0 0 16px 0;">' + t.thankYouInterest + ' <strong style="color:#c9a227;">' + shopName + '</strong>.</p>' +
+    '<p style="margin:0 0 16px 0;">' + t.thankYouInterest + ' <strong style="color:#c9a227;">' + escapeHtml(shopName) + '</strong>.</p>' +
     '<p style="margin:0 0 16px 0;">' + t.unableToApprove + '</p>' +
     reasonBlock +
     '<p style="color:#c9a227;font-weight:600;margin:24px 0 12px 0;font-size:12px;text-transform:uppercase;letter-spacing:1px;">' + t.tryAgainTips + '</p>' +
@@ -320,8 +322,13 @@ const handler = async (req: Request): Promise<Response> => {
       console.log("In-app notification created successfully");
     }
 
-    // Send email
-    await sendEmail({ to: userEmail, subject: subject, html: htmlContent });
+    // Send email — self-heal: retry transient SMTP failures with backoff.
+    // The in-app notification above is already persisted, so a retry here
+    // only re-attempts the (idempotent-enough) email, never the notification.
+    await withRetry(
+      () => sendEmail({ to: userEmail, subject: subject, html: htmlContent }),
+      { label: "send-barber-notification", attempts: 3 },
+    );
 
     console.log("Email sent successfully");
 
@@ -332,6 +339,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: unknown) {
     console.error("Error in send-barber-notification:", error);
+    await logError({ functionName: "send-barber-notification", error, severity: "error" });
     return new Response(
       JSON.stringify({ error: "An unexpected error occurred" }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }

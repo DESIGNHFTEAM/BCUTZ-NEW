@@ -3,6 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { z } from "https://esm.sh/zod@3.22.4";
 import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { logError, withRetry } from "../_shared/error-logger.ts";
 
 // UUID validation regex
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -223,7 +225,7 @@ serve(async (req) => {
             </div>
             <div style="padding: 32px;">
               <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
-                Hello ${profileData.full_name || 'there'},
+                Hello ${escapeHtml(profileData.full_name || 'there')},
               </p>
               <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
                 ${is_founder_action 
@@ -264,14 +266,25 @@ serve(async (req) => {
       `;
 
       try {
-        await sendEmail({
-          to: profileData.email,
-          subject: "Account Deletion Confirmation Code",
-          html: emailHtml,
-        });
+        // Self-heal: retry transient SMTP blips. This runs BEFORE any deletion,
+        // so retrying only re-attempts the confirmation email (safe to repeat).
+        await withRetry(
+          () => sendEmail({
+            to: profileData.email,
+            subject: "Account Deletion Confirmation Code",
+            html: emailHtml,
+          }),
+          { label: "delete-user-account:confirmation", attempts: 3 },
+        );
         logStep("Confirmation email sent via SMTP", { email: profileData.email });
       } catch (emailError: any) {
         logStep("Email send error", { error: emailError.message });
+        await logError({
+          functionName: "delete-user-account",
+          error: emailError,
+          severity: "warning",
+          context: { stage: "confirmation-email" },
+        });
         throw new Error("Failed to send confirmation email: " + emailError.message);
       }
 
@@ -528,12 +541,12 @@ serve(async (req) => {
             </div>
             
             <div style="padding: 40px 30px; color: #ffffff;">
-              <p style="font-size: 20px; margin-bottom: 20px;">Hey ${profileData.full_name || 'there'},</p>
+              <p style="font-size: 20px; margin-bottom: 20px;">Hey ${escapeHtml(profileData.full_name || 'there')},</p>
               
               ${founder_message ? `
               <div style="background: rgba(212, 175, 55, 0.1); border-left: 4px solid #d4af37; padding: 20px; margin: 20px 0; border-radius: 8px;">
                 <h4 style="color: #d4af37; margin-top: 0;">💬 A message from our team:</h4>
-                <p style="color: #e0e0e0; font-style: italic; margin: 0;">"${founder_message}"</p>
+                <p style="color: #e0e0e0; font-style: italic; margin: 0;">"${escapeHtml(founder_message)}"</p>
               </div>
               ` : ''}
               
@@ -600,15 +613,27 @@ serve(async (req) => {
           </div>
         `;
 
-        await sendEmail({
-          to: profileData.email,
-          subject: "Goodbye from BCUTZ - We Will Miss You - Special Comeback Offer Inside",
-          html: farewellHtml,
-        });
+        // Self-heal: retry transient SMTP blips. Best-effort — the account is
+        // already deleted, so a farewell-email failure must never surface as an
+        // error to the caller; we retry, then degrade gracefully on final fail.
+        await withRetry(
+          () => sendEmail({
+            to: profileData.email,
+            subject: "Goodbye from BCUTZ - We Will Miss You - Special Comeback Offer Inside",
+            html: farewellHtml,
+          }),
+          { label: "delete-user-account:farewell", attempts: 3 },
+        );
         logStep("Farewell email sent", { email: profileData.email });
       } catch (emailError: any) {
         // Don't fail the deletion if farewell email fails
         logStep("Warning: Failed to send farewell email", { error: emailError.message });
+        await logError({
+          functionName: "delete-user-account",
+          error: emailError,
+          severity: "warning",
+          context: { stage: "farewell-email" },
+        });
       }
 
       return new Response(JSON.stringify({ 
@@ -626,6 +651,7 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
+    await logError({ functionName: "delete-user-account", error, severity: "error" });
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

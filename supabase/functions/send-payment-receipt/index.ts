@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/html.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -31,10 +32,10 @@ function generateReceiptEmail(customer: any, booking: any, barber: any, payment:
     new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
 
   const invoiceNumber = 'INV-' + booking.id.substring(0, 8).toUpperCase();
-  const transactionId = (payment?.provider_transaction_id?.substring(0, 20) || booking.id.substring(0, 12));
-  const barberName = barber?.shop_name || 'Your Barber';
-  const barberAddress = barber ? (barber.address + ', ' + barber.postal_code + ' ' + barber.city) : 'Address not available';
-  const customerName = customer.full_name || '';
+  const transactionId = escapeHtml(payment?.provider_transaction_id?.substring(0, 20) || booking.id.substring(0, 12));
+  const barberName = escapeHtml(barber?.shop_name || 'Your Barber');
+  const barberAddress = barber ? (escapeHtml(barber.address) + ', ' + escapeHtml(barber.postal_code) + ' ' + escapeHtml(barber.city)) : 'Address not available';
+  const customerName = escapeHtml(customer.full_name || '');
 
   const pointsSection = booking.points_earned ? 
     '<div style="background:rgba(201,162,39,0.1);border:1px solid #c9a227;padding:12px 16px;margin:20px 0;text-align:center;"><p style="color:#c9a227;margin:0;font-size:13px;">You earned <strong>' + booking.points_earned + ' loyalty points</strong> with this booking!</p></div>' : '';
@@ -62,11 +63,11 @@ function generateReceiptEmail(customer: any, booking: any, barber: any, payment:
     '<div style="padding:12px 0;border-bottom:1px solid #222;"><span style="color:#666;font-size:13px;">Address</span><span style="float:right;color:#fff;font-size:13px;font-weight:500;">' + barberAddress + '</span><div style="clear:both;"></div></div>' +
     '<div style="padding:12px 0;border-bottom:1px solid #222;"><span style="color:#666;font-size:13px;">Date</span><span style="float:right;color:#fff;font-size:13px;font-weight:500;">' + bookingDate + '</span><div style="clear:both;"></div></div>' +
     '<div style="padding:12px 0;border-bottom:1px solid #222;"><span style="color:#666;font-size:13px;">Time</span><span style="float:right;color:#c9a227;font-size:13px;font-weight:600;">' + startTime + ' - ' + endTime + '</span><div style="clear:both;"></div></div>' +
-    '<div style="padding:12px 0;"><span style="color:#666;font-size:13px;">Service</span><span style="float:right;color:#fff;font-size:13px;font-weight:500;">' + booking.service_name + '</span><div style="clear:both;"></div></div>' +
+    '<div style="padding:12px 0;"><span style="color:#666;font-size:13px;">Service</span><span style="float:right;color:#fff;font-size:13px;font-weight:500;">' + escapeHtml(booking.service_name) + '</span><div style="clear:both;"></div></div>' +
     '</div>' +
     '<p style="color:#c9a227;font-weight:600;margin:24px 0 12px 0;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Payment Summary</p>' +
     '<div style="background:#0a0a0a;border:1px solid #222;padding:4px 16px;margin:0 0 20px 0;">' +
-    '<div style="padding:12px 0;border-bottom:1px solid #222;"><span style="color:#aaa;font-size:13px;">' + booking.service_name + '</span><span style="float:right;color:#fff;font-size:13px;">' + booking.currency + ' ' + Number(booking.service_price).toFixed(2) + '</span><div style="clear:both;"></div></div>' +
+    '<div style="padding:12px 0;border-bottom:1px solid #222;"><span style="color:#aaa;font-size:13px;">' + escapeHtml(booking.service_name) + '</span><span style="float:right;color:#fff;font-size:13px;">' + booking.currency + ' ' + Number(booking.service_price).toFixed(2) + '</span><div style="clear:both;"></div></div>' +
     '<div style="padding:12px 0;border-bottom:1px solid #222;"><span style="color:#aaa;font-size:13px;">Booking Fee</span><span style="float:right;color:#fff;font-size:13px;">' + booking.currency + ' ' + Number(booking.platform_fee).toFixed(2) + '</span><div style="clear:both;"></div></div>' +
     '<div style="padding:16px 0;background:#0f0f0f;margin:0 -16px;padding-left:16px;padding-right:16px;"><span style="color:#fff;font-size:14px;font-weight:600;">Total Paid</span><span style="float:right;color:#c9a227;font-size:18px;font-weight:700;">' + booking.currency + ' ' + Number(booking.total_amount).toFixed(2) + '</span><div style="clear:both;"></div></div>' +
     '</div>' +

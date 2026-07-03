@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { logError, withRetry } from "../_shared/error-logger.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -66,7 +68,7 @@ function generateWelcomeEmail(name: string, isBarber: boolean): string {
     '<tr><td style="background-color:#111;border:1px solid #222;padding:32px;">' +
     '<div style="display:inline-block;background:rgba(201,162,39,0.15);color:#c9a227;border:1px solid #c9a227;padding:6px 14px;border-radius:4px;font-size:12px;font-weight:600;letter-spacing:0.5px;margin-bottom:16px;">' + badgeText + '</div>' +
     '<h2 style="color:#fff;font-size:22px;font-weight:600;margin:0 0 16px 0;line-height:1.3;">' + title + '</h2>' +
-    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">Hey ' + displayName + ',</p>' +
+    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">Hey ' + escapeHtml(displayName) + ',</p>' +
     '<div style="color:#aaa;font-size:14px;line-height:1.7;">' + content + '</div>' +
     '<div style="margin:32px 0;text-align:center;">' +
     '<a href="' + ctaUrl + '" style="display:inline-block;background:#c9a227;color:#0a0a0a;text-decoration:none;padding:14px 32px;font-weight:600;letter-spacing:1px;font-size:14px;">' + ctaText + '</a>' +
@@ -110,7 +112,13 @@ const handler = async (req: Request): Promise<Response> => {
     
     const htmlContent = generateWelcomeEmail(name || "there", isBarber);
 
-    await sendEmail({ to: email, subject: subject, html: htmlContent });
+    // Self-heal: retry transient SMTP failures (network/timeout/5xx) with
+    // exponential backoff. Email send is best-effort-idempotent; a rare
+    // duplicate welcome email is low-harm, so retrying is safe here.
+    await withRetry(
+      () => sendEmail({ to: email, subject: subject, html: htmlContent }),
+      { label: "send-welcome-email", attempts: 3 },
+    );
 
     logStep("Welcome email sent successfully", { email, userType });
 
@@ -120,6 +128,7 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error: any) {
     logStep("Error sending welcome email", { error: error.message });
+    await logError({ functionName: "send-welcome-email", error, severity: "error" });
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }

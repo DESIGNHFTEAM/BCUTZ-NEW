@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/html.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -13,7 +14,7 @@ interface FarewellEmailRequest {
 }
 
 function generateFarewellEmail(name: string): string {
-  const displayName = name || "there";
+  const displayName = escapeHtml(name || "there");
   const year = new Date().getFullYear();
 
   return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Goodbye from BCUTZ</title></head>' +

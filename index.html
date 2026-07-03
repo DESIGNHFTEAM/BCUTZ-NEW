@@ -2,6 +2,10 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
+    <!-- Content-Security-Policy fallback for hosts that don't honor public/_headers.
+         Keep in sync with the CSP in public/_headers (minus frame-ancestors, which
+         a meta tag cannot express — that stays header-only for clickjacking defense). -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://mistdeyttbkqrxcvnrlp.supabase.co wss://mistdeyttbkqrxcvnrlp.supabase.co; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.svg" />

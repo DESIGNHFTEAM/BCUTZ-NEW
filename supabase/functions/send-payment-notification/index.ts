@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/html.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -138,17 +139,17 @@ function generateCustomerEmail(
             <td style="background-color: #111; border: 1px solid #222; padding: 32px;">
               <div style="display: inline-block; background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid #22c55e; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 16px;">${t.paymentSuccessful}</div>
               <h2 style="color: #fff; font-size: 22px; font-weight: 600; margin: 0 0 16px 0; line-height: 1.3;">${t.bookingConfirmed}</h2>
-              <p style="color: #888; font-size: 14px; margin: 0 0 20px 0;">${t.thankYou}, ${customerName}.</p>
+              <p style="color: #888; font-size: 14px; margin: 0 0 20px 0;">${t.thankYou}, ${escapeHtml(customerName)}.</p>
               <div style="color: #aaa; font-size: 14px; line-height: 1.7;">
                 <div style="background: #0a0a0a; border: 1px solid #222; padding: 4px 16px; margin: 20px 0;">
                   <div style="padding: 12px 0; border-bottom: 1px solid #222;">
                     <span style="color: #666; font-size: 13px;">${t.service}</span>
-                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${booking.service_name}</span>
+                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${escapeHtml(booking.service_name)}</span>
                     <div style="clear: both;"></div>
                   </div>
                   <div style="padding: 12px 0; border-bottom: 1px solid #222;">
                     <span style="color: #666; font-size: 13px;">${t.barbershop}</span>
-                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${barber?.shop_name || 'Your Barber'}</span>
+                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${escapeHtml(barber?.shop_name || 'Your Barber')}</span>
                     <div style="clear: both;"></div>
                   </div>
                   <div style="padding: 12px 0; border-bottom: 1px solid #222;">
@@ -163,7 +164,7 @@ function generateCustomerEmail(
                   </div>
                   <div style="padding: 12px 0; border-bottom: 1px solid #222;">
                     <span style="color: #666; font-size: 13px;">${t.location}</span>
-                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${barber?.address || ''}, ${barber?.city || ''}</span>
+                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${escapeHtml(barber?.address || '')}, ${escapeHtml(barber?.city || '')}</span>
                     <div style="clear: both;"></div>
                   </div>
                   <div style="padding: 12px 0;">
@@ -236,12 +237,12 @@ function generateBarberEmail(
                 <div style="background: #0a0a0a; border: 1px solid #222; padding: 4px 16px; margin: 20px 0;">
                   <div style="padding: 12px 0; border-bottom: 1px solid #222;">
                     <span style="color: #666; font-size: 13px;">${t.customer}</span>
-                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${customerName}</span>
+                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${escapeHtml(customerName)}</span>
                     <div style="clear: both;"></div>
                   </div>
                   <div style="padding: 12px 0; border-bottom: 1px solid #222;">
                     <span style="color: #666; font-size: 13px;">${t.service}</span>
-                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${booking.service_name}</span>
+                    <span style="float: right; color: #fff; font-size: 13px; font-weight: 500;">${escapeHtml(booking.service_name)}</span>
                     <div style="clear: both;"></div>
                   </div>
                   <div style="padding: 12px 0; border-bottom: 1px solid #222;">

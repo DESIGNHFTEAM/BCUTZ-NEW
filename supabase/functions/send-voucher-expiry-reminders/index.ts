@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/html.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -33,14 +34,14 @@ function generateVoucherExpiryEmail(name: string, voucherCode: string, discountT
             <td style="background-color: #111; border: 1px solid #222; padding: 32px;">
               <div style="display: inline-block; background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid #eab308; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 16px;">EXPIRING SOON</div>
               <h2 style="color: #fff; font-size: 22px; font-weight: 600; margin: 0 0 16px 0; line-height: 1.3;">Don't miss out!</h2>
-              <p style="color: #888; font-size: 14px; margin: 0 0 20px 0;">Hey ${name},</p>
+              <p style="color: #888; font-size: 14px; margin: 0 0 20px 0;">Hey ${escapeHtml(name)},</p>
               <div style="color: #aaa; font-size: 14px; line-height: 1.7;">
-                <p>Your <strong style="color: #c9a227;">${discountText}</strong> voucher is expiring soon. Use it before it's gone!</p>
+                <p>Your <strong style="color: #c9a227;">${escapeHtml(discountText)}</strong> voucher is expiring soon. Use it before it's gone!</p>
                 
                 <div style="background: #0a0a0a; border: 2px solid #c9a227; padding: 20px; margin: 24px 0; text-align: center;">
                   <p style="color: #666; font-size: 11px; letter-spacing: 2px; margin: 0 0 8px 0;">YOUR VOUCHER CODE</p>
                   <p style="font-family: monospace; font-size: 24px; font-weight: 700; letter-spacing: 4px; color: #c9a227; margin: 0;">
-                    ${voucherCode}
+                    ${escapeHtml(voucherCode)}
                   </p>
                 </div>
                 

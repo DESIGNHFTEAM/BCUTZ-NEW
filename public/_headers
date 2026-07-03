@@ -1,0 +1,21 @@
+# Security headers for static hosts that honor a Netlify-style _headers file
+# (Netlify, and Lovable's static hosting). Vite copies everything in public/
+# into dist/ at build time, so this ships as dist/_headers automatically.
+#
+# NOTE: hosts that do NOT read _headers (e.g. plain Vercel, some CDNs) will
+# ignore this file — the <meta http-equiv="Content-Security-Policy"> tag in
+# index.html is the portable fallback for the CSP itself. Header-only
+# directives (frame-ancestors, HSTS, X-Frame-Options) cannot be expressed in
+# a meta tag, so they only take effect where this file is honored.
+#
+# If the app breaks after deploy, check the browser console for a
+# "Refused to ... because it violates the Content-Security-Policy" message
+# and add the reported origin to the matching directive below.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://mistdeyttbkqrxcvnrlp.supabase.co wss://mistdeyttbkqrxcvnrlp.supabase.co; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

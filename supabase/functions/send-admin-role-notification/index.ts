@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/html.ts";
 
 interface NotificationRequest {
   target_user_id: string;
@@ -20,9 +21,9 @@ function generateAdminGrantEmail(targetName: string, actorDisplayName: string): 
     '<tr><td style="background-color:#111;border:1px solid #222;padding:32px;">' +
     '<div style="display:inline-block;background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid #22c55e;padding:6px 14px;border-radius:4px;font-size:12px;font-weight:600;letter-spacing:0.5px;margin-bottom:16px;">ADMIN ACCESS GRANTED</div>' +
     '<h2 style="color:#fff;font-size:22px;font-weight:600;margin:0 0 16px 0;line-height:1.3;">Welcome to the Admin Team</h2>' +
-    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">Hey ' + targetName + ',</p>' +
+    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">Hey ' + escapeHtml(targetName) +',</p>' +
     '<div style="color:#aaa;font-size:14px;line-height:1.7;">' +
-    '<p style="margin:0 0 16px 0;">You have been granted <strong style="color:#c9a227;">Admin access</strong> to the BCUTZ platform by ' + actorDisplayName + '.</p>' +
+    '<p style="margin:0 0 16px 0;">You have been granted <strong style="color:#c9a227;">Admin access</strong> to the BCUTZ platform by ' + escapeHtml(actorDisplayName) +'.</p>' +
     '<p style="color:#c9a227;font-weight:600;margin:24px 0 12px 0;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Your Admin Powers</p>' +
     '<ul style="list-style:none;padding:0;margin:0;">' +
     '<li style="padding:8px 0;color:#aaa;"><span style="color:#c9a227;margin-right:8px;">&#10003;</span> Verify and approve new barber registrations</li>' +
@@ -52,9 +53,9 @@ function generateAdminRevokeEmail(targetName: string, actorDisplayName: string):
     '<tr><td style="background-color:#111;border:1px solid #222;padding:32px;">' +
     '<div style="display:inline-block;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid #ef4444;padding:6px 14px;border-radius:4px;font-size:12px;font-weight:600;letter-spacing:0.5px;margin-bottom:16px;">ACCESS REVOKED</div>' +
     '<h2 style="color:#fff;font-size:22px;font-weight:600;margin:0 0 16px 0;line-height:1.3;">Admin Access Update</h2>' +
-    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">Hello ' + targetName + ',</p>' +
+    '<p style="color:#888;font-size:14px;margin:0 0 20px 0;">Hello ' + escapeHtml(targetName) +',</p>' +
     '<div style="color:#aaa;font-size:14px;line-height:1.7;">' +
-    '<p style="margin:0 0 16px 0;">Your admin access to the BCUTZ platform has been revoked by ' + actorDisplayName + '.</p>' +
+    '<p style="margin:0 0 16px 0;">Your admin access to the BCUTZ platform has been revoked by ' + escapeHtml(actorDisplayName) +'.</p>' +
     '<p style="margin:0 0 16px 0;">If you believe this was done in error, please contact the BCUTZ team directly.</p>' +
     '<p style="margin:0;">You can still use BCUTZ as a regular user to book appointments and explore barbers.</p>' +
     '</div>' +
