@@ -2,7 +2,9 @@ import { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import { App, URLOpenListenerEvent } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface DeepLinkRoute {
   pattern: RegExp;
@@ -91,6 +93,58 @@ export function useDeepLinks() {
     return false;
   }, [navigate]);
 
+  // Intercepts the OAuth redirect (bcutz://auth/callback) fired by the system
+  // browser after Google/Apple sign-in. Default-agnostic: handles PKCE (?code=)
+  // AND implicit (#access_token=) so we don't have to force a global flowType
+  // and risk regressing the web email/reset flows.
+  const handleAuthCallback = useCallback(async (url: string): Promise<boolean> => {
+    if (!url.startsWith('bcutz://auth/callback')) return false;
+    console.log('[DeepLinks] Handling OAuth callback');
+
+    const queryStr = url.includes('?') ? url.split('?')[1].split('#')[0] : '';
+    const hashStr = url.includes('#') ? url.split('#')[1] : '';
+    const query = new URLSearchParams(queryStr);
+    const hash = new URLSearchParams(hashStr);
+
+    const code = query.get('code');
+    const errorDescription =
+      query.get('error_description') || hash.get('error_description');
+    const accessToken = hash.get('access_token');
+    const refreshToken = hash.get('refresh_token');
+
+    try {
+      if (errorDescription) throw new Error(errorDescription);
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) throw error;
+      } else if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (error) throw error;
+      } else {
+        // Not a shape we recognise — let the normal router try.
+        return false;
+      }
+
+      try { await Browser.close(); } catch { /* browser may already be closed */ }
+      navigate('/');
+      return true;
+    } catch (error) {
+      console.error('[DeepLinks] OAuth callback failed:', error);
+      try { await Browser.close(); } catch { /* browser may already be closed */ }
+      toast({
+        title: 'Sign in failed',
+        description: 'We could not complete sign in. Please try again.',
+        variant: 'destructive',
+      });
+      navigate('/auth');
+      return true;
+    }
+  }, [navigate]);
+
   const handleNotificationDeepLink = useCallback((data: Record<string, unknown>) => {
     console.log('[DeepLinks] Handling notification data:', data);
 
@@ -141,15 +195,18 @@ export function useDeepLinks() {
     console.log('[DeepLinks] Setting up deep link listeners');
 
     // Handle app opened via URL while running
-    const urlOpenListener = App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+    const urlOpenListener = App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
       console.log('[DeepLinks] App opened with URL:', event.url);
+      // OAuth callback takes priority — if it consumes the URL, stop here.
+      if (await handleAuthCallback(event.url)) return;
       handleDeepLink(event.url);
     });
 
     // Check if app was opened with a URL (cold start)
-    App.getLaunchUrl().then((result) => {
+    App.getLaunchUrl().then(async (result) => {
       if (result?.url) {
         console.log('[DeepLinks] App launched with URL:', result.url);
+        if (await handleAuthCallback(result.url)) return;
         handleDeepLink(result.url);
       }
     }).catch((error) => {
@@ -159,10 +216,11 @@ export function useDeepLinks() {
     return () => {
       urlOpenListener.then(listener => listener.remove());
     };
-  }, [handleDeepLink]);
+  }, [handleDeepLink, handleAuthCallback]);
 
   return {
     handleDeepLink,
+    handleAuthCallback,
     handleNotificationDeepLink,
   };
 }

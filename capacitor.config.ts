@@ -45,7 +45,10 @@ const config: CapacitorConfig = {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
     StatusBar: {
-      style: 'DARK',
+      // App ships dark-themed: LIGHT = white status-bar text/icons (correct on #0a0a0a).
+      // Was 'DARK' (dark text) which the runtime overrode, but the first native frame
+      // flashed dark text. Set the static config to match the dark theme.
+      style: 'LIGHT',
       backgroundColor: '#0a0a0a',
       overlaysWebView: false,
     },
@@ -55,6 +58,10 @@ const config: CapacitorConfig = {
     contentInset: 'automatic',
     preferredContentMode: 'mobile',
     scheme: 'bcutz',
+    // Paints the native WKWebView/container dark. With overlaysWebView:false the
+    // status-bar strip is filled by THIS color (StatusBar.backgroundColor is
+    // Android-only), so without it iOS left a WHITE bar at the top. #0a0a0a kills it.
+    backgroundColor: '#0a0a0a',
     // Xcode → Signing & Capabilities → Associated Domains:
     //   applinks:bcutz.lovable.app
     //   webcredentials:bcutz.lovable.app

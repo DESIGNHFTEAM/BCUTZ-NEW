@@ -11,6 +11,9 @@ import { useAuth } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { supabase } from '@/integrations/supabase/client';
+import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
+import { SignInWithApple, type SignInWithAppleOptions } from '@capacitor-community/apple-sign-in';
 import { z } from 'zod';
 import { useRateLimiting } from '@/hooks/useRateLimiting';
 import { getPathWithLanguage, getLanguageFromPath, LanguageCode } from '@/lib/i18n';
@@ -28,6 +31,25 @@ const signInSchema = z.object({
 });
 
 type UserType = 'customer' | 'barber';
+
+// ── Native Sign in with Apple nonce helpers ──────────────────────────────
+// Supabase's signInWithIdToken needs the RAW nonce, while Apple binds the
+// identity token to SHA256(nonce). So: generate a raw nonce, pass its hash to
+// the native authorize() call, and hand the raw value back to Supabase.
+function generateNonce(length = 32): string {
+  const charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-._';
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => charset[b % charset.length]).join('');
+}
+
+async function sha256Hex(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
@@ -125,24 +147,40 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
+      const isNative = Capacitor.isNativePlatform();
 
-      if (error) {
-        toast({
-          title: 'Google Sign In Failed',
-          description: error.message,
-          variant: 'destructive',
+      if (isNative) {
+        // Native (iOS/Android): Google FORBIDS OAuth inside an embedded webview
+        // ("disallowed_useragent"). The default signInWithOAuth full-page redirect
+        // would navigate the Capacitor WKWebView to accounts.google.com and tear
+        // down the SPA — the crash Halil saw. Instead: ask Supabase for the
+        // authorize URL only (skipBrowserRedirect), open it in the SYSTEM browser
+        // (SFSafariViewController), and let the bcutz://auth/callback deep link —
+        // handled in useDeepLinks — finish the session exchange.
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: 'bcutz://auth/callback',
+            skipBrowserRedirect: true,
+          },
         });
+        if (error) throw error;
+        if (!data?.url) throw new Error('No OAuth URL returned from Supabase');
+        await Browser.open({ url: data.url, presentationStyle: 'popover' });
+        // Release the spinner here: auth continues in the system browser and the
+        // app resumes via the deep-link handler once Google redirects back.
+      } else {
+        // Web (and Android PWA): standard full-page redirect to the app origin.
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: `${window.location.origin}/` },
+        });
+        if (error) throw error;
       }
     } catch (err) {
       toast({
-        title: 'Error',
-        description: 'Failed to connect with Google',
+        title: 'Google Sign In Failed',
+        description: (err as Error)?.message ?? 'Failed to connect with Google',
         variant: 'destructive',
       });
     } finally {
@@ -150,29 +188,64 @@ export default function Auth() {
     }
   };
 
+  // Web OAuth flow (browser redirect). Used on web/Android, and as a fallback
+  // on iOS when the native sheet is unavailable (e.g. before the operator adds
+  // the "Sign In with Apple" capability in Xcode).
+  const appleWebSignIn = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'apple',
+      options: { redirectTo: `${window.location.origin}/` },
+    });
+    if (error) {
+      toast({ title: 'Apple Sign In Failed', description: error.message, variant: 'destructive' });
+    }
+  };
+
   const handleAppleSignIn = async () => {
     setIsAppleLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'apple',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
+      const isNativeIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
 
-      if (error) {
-        toast({
-          title: 'Apple Sign In Failed',
-          description: error.message,
-          variant: 'destructive',
-        });
+      if (isNativeIOS) {
+        // Native ASAuthorizationController sheet — no browser redirect.
+        // Requires the "Sign In with Apple" capability/entitlement (operator adds
+        // it in Xcode → Signing & Capabilities; needs an Apple Developer account).
+        try {
+          const rawNonce = generateNonce();
+          const hashedNonce = await sha256Hex(rawNonce);
+          const options: SignInWithAppleOptions = {
+            clientId: 'com.bcutz.app',
+            redirectURI: `${window.location.origin}/`,
+            scopes: 'name email',
+            nonce: hashedNonce,
+          };
+
+          const result = await SignInWithApple.authorize(options);
+          const idToken = result.response?.identityToken;
+          if (!idToken) throw new Error('Apple did not return an identityToken');
+
+          const { error } = await supabase.auth.signInWithIdToken({
+            provider: 'apple',
+            token: idToken,
+            nonce: rawNonce,
+          });
+          if (error) throw error;
+          return; // success — redirect handled by the user-state useEffect
+        } catch (nativeErr: unknown) {
+          // Respect an explicit user cancellation (don't bounce them to the web flow).
+          const msg = String((nativeErr as Error)?.message ?? nativeErr ?? '').toLowerCase();
+          const code = String((nativeErr as { code?: string })?.code ?? '');
+          const userCanceled = code === '1001' || msg.includes('cancel') || msg.includes('1001');
+          if (userCanceled) return;
+          // Native unavailable (e.g. entitlement not yet enabled) → fall back to web.
+          console.warn('[AppleSignIn] native flow failed, falling back to web OAuth', nativeErr);
+          await appleWebSignIn();
+        }
+      } else {
+        await appleWebSignIn();
       }
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to connect with Apple',
-        variant: 'destructive',
-      });
+      toast({ title: 'Error', description: 'Failed to connect with Apple', variant: 'destructive' });
     } finally {
       setIsAppleLoading(false);
     }
