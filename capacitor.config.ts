@@ -14,7 +14,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const isDev = process.env.CAPACITOR_ENV === 'development';
 
 const config: CapacitorConfig = {
-  appId: 'com.bcutz.app',
+  appId: 'com.designhfteam.bcutz',
   appName: 'BCUTZ',
   webDir: 'dist',
 

@@ -55,7 +55,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.bcutz.app</string>
+			<string>com.designhfteam.bcutz</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>bcutz</string>
