@@ -128,21 +128,56 @@ export function cityMatchesSearch(cityName: string, searchQuery: string): boolea
 }
 
 /**
+ * Generic industry terms that shouldn't restrict search results.
+ * If a query consists only of these (e.g. "barber shops", "salon near me"),
+ * treat it as a browse-all query rather than a name/location filter.
+ */
+const GENERIC_SEARCH_TERMS = new Set([
+  'barber', 'barbers', 'barbershop', 'barbershops',
+  'shop', 'shops', 'salon', 'salons', 'studio', 'studios',
+  'hair', 'haircut', 'haircuts', 'cut', 'cuts', 'fade', 'fades',
+  'hairdresser', 'hairdressers', 'coiffeur', 'coiffure', 'friseur', 'parrucchiere',
+  'beauty', 'grooming', 'near', 'me', 'nearme', 'nearby', 'in', 'the', 'a', 'best',
+]);
+
+/**
+ * Remove generic industry terms from a normalized query, leaving only the
+ * specific part (e.g. "zurich barber shop" -> "zurich").
+ */
+function stripGenericTerms(normalizedQuery: string): string {
+  return normalizedQuery
+    .split(/\s+/)
+    .filter((token) => token && !GENERIC_SEARCH_TERMS.has(token))
+    .join(' ')
+    .trim();
+}
+
+/**
  * Filter function that checks both shop name and city with fuzzy matching
  */
 export function barberMatchesSearch(
-  shopName: string, 
-  city: string, 
+  shopName: string,
+  city: string,
   searchQuery: string
 ): boolean {
   if (!searchQuery.trim()) return true;
-  
+
   const normalizedQuery = normalizeString(searchQuery);
   const normalizedShopName = normalizeString(shopName);
-  
-  // Check shop name
+
+  // Generic queries like "barber shops" or "salon near me" match everything
+  const specificQuery = stripGenericTerms(normalizedQuery);
+  if (!specificQuery) return true;
+
+  // Check shop name (also space-insensitive so "barber shop" matches "Barbershop")
   if (normalizedShopName.includes(normalizedQuery)) return true;
-  
-  // Check city with fuzzy matching
-  return cityMatchesSearch(city, searchQuery);
+  const compactShopName = normalizedShopName.replace(/\s+/g, '');
+  if (compactShopName.includes(normalizedQuery.replace(/\s+/g, ''))) return true;
+  if (
+    normalizedShopName.includes(specificQuery) ||
+    compactShopName.includes(specificQuery.replace(/\s+/g, ''))
+  ) return true;
+
+  // Check city with fuzzy matching (full query and its specific part)
+  return cityMatchesSearch(city, searchQuery) || cityMatchesSearch(city, specificQuery);
 }

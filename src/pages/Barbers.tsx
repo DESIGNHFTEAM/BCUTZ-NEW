@@ -156,12 +156,24 @@ export default function Barbers() {
     setIsLoading(false);
   };
 
-  const filteredBarbers = barbers.filter((barber) => {
+  const strictFilteredBarbers = barbers.filter((barber) => {
     const matchesSearch = barberMatchesSearch(barber.shop_name, barber.city, searchQuery);
     const matchesType = businessTypeFilter === 'all' || barber.business_type === businessTypeFilter;
     const matchesCity = cityFilter === 'all' || barber.city === cityFilter;
     return matchesSearch && matchesType && matchesCity;
   });
+
+  // Never dead-end a text search: if nothing matches the typed query,
+  // fall back to showing all professionals (dropdown filters still apply).
+  const searchFallbackActive =
+    strictFilteredBarbers.length === 0 && searchQuery.trim() !== '' && barbers.length > 0;
+  const filteredBarbers = searchFallbackActive
+    ? barbers.filter((barber) => {
+        const matchesType = businessTypeFilter === 'all' || barber.business_type === businessTypeFilter;
+        const matchesCity = cityFilter === 'all' || barber.city === cityFilter;
+        return matchesType && matchesCity;
+      })
+    : strictFilteredBarbers;
 
   const navigateBarber = (direction: 'up' | 'down') => {
     if (filteredBarbers.length === 0) return;
@@ -295,6 +307,11 @@ export default function Barbers() {
                   className="bg-background/90 backdrop-blur-sm border-foreground/30 rounded-none h-12 font-sans tracking-wider placeholder:text-muted-foreground/50"
                   autoFocus
                 />
+                {searchFallbackActive && (
+                  <p className="text-xs tracking-wider text-muted-foreground">
+                    {t('barbers.noExactMatchShowingAll', 'No exact match for your search — showing all available professionals')}
+                  </p>
+                )}
                 {/* Business Type Filter */}
                 <div className="flex gap-2">
                   <button
@@ -565,6 +582,11 @@ export default function Barbers() {
                   </SelectContent>
                 </Select>
               </div>
+              {searchFallbackActive && (
+                <p className="text-sm tracking-wider text-muted-foreground">
+                  {t('barbers.noExactMatchShowingAll', 'No exact match for your search — showing all available professionals')}
+                </p>
+              )}
               {/* Business Type Filter */}
               <div className="flex flex-wrap gap-3">
                 <button
